@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import AddClient from "@/components/AddClient";
-import ClientTable from "@/components/ClientTable";
+import AddClient from "@/components/client/AddClient";
+import ClientTable from "@/components/client/ClientTable";
 
 export default function Clientes() {
   const [showPopup, setShowPopup] = useState(false);
