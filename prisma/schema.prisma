@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Cliente {
-  dni Int @id
+  dni String @id
   nombre String
   apellido String
   email String
@@ -26,7 +26,7 @@ model Vehiculo {
   modelo String
   anio Int?
   cliente Cliente? @relation(fields: [clienteDni], references: [dni])
-  clienteDni Int
+  clienteDni String
   revision Revision[]
 }
 
