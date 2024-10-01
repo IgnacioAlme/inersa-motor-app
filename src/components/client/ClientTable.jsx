@@ -1,31 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function ClientTable({ onDeleteClient }) {
-  const [clientes, setClientes] = useState([]);
-
-  useEffect(() => {
-    const fetchClientes = async () => {
-      const response = await fetch("/api/clientes");
-      const data = await response.json();
-      setClientes(data);
-    };
-
-    fetchClientes();
-  }, []);
-
-  const handleDeleteCliente = async (dni) => {
-    const response = await fetch(`/api/clientes/${dni}`, {
-      method: "DELETE",
-    });
-
-    if (response.ok) {
-      setClientes(clientes.filter((cliente) => cliente.dni !== dni));
-      onDeleteClient(dni);
-    } else {
-      console.error("Error al eliminar cliente");
-    }
-  };
-
+export default function ClientTable({ clientes, onDeleteClient, onEditClient }) {
   return (
     <table className="min-w-full bg-white border border-gray-300">
       <thead>
@@ -52,11 +27,14 @@ export default function ClientTable({ onDeleteClient }) {
               <button className="text-blue-600 hover:underline mr-2">
                 Crear Revisión
               </button>
-              <button className="text-yellow-600 hover:underline mr-2">
+              <button
+                onClick={() => onEditClient(cliente)}
+                className="text-yellow-600 hover:underline mr-2"
+              >
                 Editar
               </button>
               <button
-                onClick={() => handleDeleteCliente(cliente.dni)}
+                onClick={() => onDeleteClient(cliente.dni)}
                 className="text-red-600 hover:underline"
               >
                 Eliminar
