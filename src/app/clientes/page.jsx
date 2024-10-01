@@ -55,8 +55,16 @@ export default function Clientes() {
     }
   };
 
-  const handleEditClient = (client) => {
-    setEditingClient(client);
+  const handleEditClient = async (client) => {
+    try {
+      const response = await fetch(`/api/clientes/${client.dni}?includeVehicles=true`);
+      if (!response.ok) throw new Error('Failed to fetch client details');
+      const data = await response.json();
+      setEditingClient(data);
+    } catch (error) {
+      console.error('Error fetching client details:', error);
+      // Handle error (e.g., show an error message to the user)
+    }
   };
 
   const handleUpdateClient = async (updatedClient) => {
@@ -93,6 +101,7 @@ export default function Clientes() {
       const response = await fetch(`/api/clientes/${dni}?includeVehicles=true`);
       if (!response.ok) throw new Error('Failed to fetch client details');
       const data = await response.json();
+      console.log('Fetched client data:', data); // Add this line for debugging
       setEditingClient(data);
     } catch (error) {
       console.error('Error fetching client details:', error);
@@ -138,7 +147,7 @@ export default function Clientes() {
 
       {editingClient && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl"> {/* Updated to max-w-7xl */}
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl">
             <EditClient
               client={editingClient}
               onUpdateClient={handleUpdateClient}

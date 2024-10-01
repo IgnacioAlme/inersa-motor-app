@@ -66,14 +66,19 @@ export async function GET(request, { params }) {
   const { searchParams } = new URL(request.url);
   const includeVehicles = searchParams.get('includeVehicles') === 'true';
 
-  const client = await prisma.cliente.findUnique({
-    where: { dni: id },
-    include: includeVehicles ? { vehiculo: true } : undefined,
-  });
+  try {
+    const client = await prisma.cliente.findUnique({
+      where: { dni: id },
+      include: includeVehicles ? { vehiculo: true } : undefined,
+    });
 
-  if (!client) {
-    return NextResponse.json({ error: 'Cliente no encontrado' }, { status: 404 });
+    if (!client) {
+      return NextResponse.json({ error: 'Cliente no encontrado' }, { status: 404 });
+    }
+
+    return NextResponse.json(client);
+  } catch (error) {
+    console.error('Error fetching client:', error);
+    return NextResponse.json({ error: 'Error fetching client' }, { status: 500 });
   }
-
-  return NextResponse.json(client);
 }
