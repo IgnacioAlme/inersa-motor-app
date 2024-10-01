@@ -9,13 +9,16 @@ export async function GET(request) {
 
 // Crear una revision
 export async function POST(request) {
-  const { vehiculoId, detalles, presupuesto, fecha } = await request.json();
+  const { vehiculoId, detalles, presupuesto, fecha, repuestos } = await request.json();
   const response = await prisma.revision.create({
     data: {
       vehiculoId,
       detalles,
       presupuesto,
       fecha,
+      repuestos: {
+        connect: repuestos.map(id => ({ id }))
+      }
     },
   });
 

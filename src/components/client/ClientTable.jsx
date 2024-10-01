@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Link from 'next/link';
 
 export default function ClientTable({ clientes, onDeleteClient, onEditClient }) {
   return (
@@ -24,9 +25,9 @@ export default function ClientTable({ clientes, onDeleteClient, onEditClient }) 
             <td className="py-2 px-4 border-b">{cliente.telefono}</td>
             <td className="py-2 px-4 border-b">{cliente.direccion}</td>
             <td className="py-2 px-4 border-b">
-              <button className="text-blue-600 hover:underline mr-2">
+              <Link href={`/revisiones/crear/${cliente.dni}`} className="text-blue-600 hover:underline mr-2">
                 Crear Revisión
-              </button>
+              </Link>
               <button
                 onClick={() => onEditClient(cliente)}
                 className="text-yellow-600 hover:underline mr-2"

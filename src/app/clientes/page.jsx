@@ -50,7 +50,7 @@ export default function Clientes() {
     } catch (err) {
       console.error("Error deleting client:", err);
       setError(err.message);
-      // Optionally, you can set a timeout to clear the error after a few seconds
+      // timeout para limpiar el error
       setTimeout(() => setError(null), 5000);
     }
   };
@@ -63,7 +63,7 @@ export default function Clientes() {
       setEditingClient(data);
     } catch (error) {
       console.error('Error fetching client details:', error);
-      // Handle error (e.g., show an error message to the user)
+      // Mostrar error al usuario
     }
   };
 
@@ -101,11 +101,10 @@ export default function Clientes() {
       const response = await fetch(`/api/clientes/${dni}?includeVehicles=true`);
       if (!response.ok) throw new Error('Failed to fetch client details');
       const data = await response.json();
-      console.log('Fetched client data:', data); // Add this line for debugging
       setEditingClient(data);
     } catch (error) {
       console.error('Error fetching client details:', error);
-      // Handle error (e.g., show an error message to the user)
+      
     }
   };
 
