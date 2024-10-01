@@ -88,6 +88,18 @@ export default function Clientes() {
     }
   };
 
+  const fetchClientDetails = async (dni) => {
+    try {
+      const response = await fetch(`/api/clientes/${dni}?includeVehicles=true`);
+      if (!response.ok) throw new Error('Failed to fetch client details');
+      const data = await response.json();
+      setEditingClient(data);
+    } catch (error) {
+      console.error('Error fetching client details:', error);
+      // Handle error (e.g., show an error message to the user)
+    }
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -126,7 +138,7 @@ export default function Clientes() {
 
       {editingClient && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl"> {/* Updated to max-w-7xl */}
             <EditClient
               client={editingClient}
               onUpdateClient={handleUpdateClient}

@@ -7,75 +7,23 @@ export async function PUT(request, { params }) {
     const { id } = params;
     const data = await request.json();
 
-    // Start a transaction to ensure data consistency
-    const updatedClient = await prisma.$transaction(async (prisma) => {
-      // Update the client's basic information
-      const updatedClientInfo = await prisma.cliente.update({
-        where: { dni: id },
-        data: {
-          nombre: data.nombre,
-          apellido: data.apellido,
-          email: data.email,
-          telefono: data.telefono,
-          direccion: data.direccion,
-        },
-      });
-
-      // Get existing vehicles
-      const existingVehicles = await prisma.vehiculo.findMany({
-        where: { clienteDni: id },
-      });
-
-      // Identify vehicles to delete, update, and create
-      const vehiclesToDelete = existingVehicles.filter(
-        (ev) => !data.vehiculo.some((v) => v.matricula === ev.matricula)
-      );
-      const vehiclesToUpdate = data.vehiculo.filter((v) =>
-        existingVehicles.some((ev) => ev.matricula === v.matricula)
-      );
-      const vehiclesToCreate = data.vehiculo.filter(
-        (v) => !existingVehicles.some((ev) => ev.matricula === v.matricula)
-      );
-
-      // Delete vehicles
-      await prisma.vehiculo.deleteMany({
-        where: {
-          matricula: { in: vehiclesToDelete.map((v) => v.matricula) },
-        },
-      });
-
-      // Update vehicles
-      for (const vehicle of vehiclesToUpdate) {
-        await prisma.vehiculo.update({
-          where: { matricula: vehicle.matricula },
-          data: {
-            marca: vehicle.marca,
-            modelo: vehicle.modelo,
-            anio: vehicle.anio,
-          },
-        });
-      }
-
-      // Create new vehicles
-      await prisma.vehiculo.createMany({
-        data: vehiclesToCreate.map((v) => ({
-          ...v,
-          clienteDni: id,
-        })),
-      });
-
-      // Fetch the updated client with all vehicles
-      return prisma.cliente.findUnique({
-        where: { dni: id },
-        include: { vehiculo: true },
-      });
+    const updatedClient = await prisma.cliente.update({
+      where: { dni: id },
+      data: {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        email: data.email,
+        telefono: data.telefono,
+        direccion: data.direccion,
+      },
+      include: { vehiculo: true }, // Include vehicles in the response
     });
 
     return NextResponse.json({ message: "Cliente actualizado exitosamente", data: updatedClient });
   } catch (error) {
-    console.error("Error al actualizar cliente o gestionar vehículos:", error);
+    console.error("Error al actualizar cliente:", error);
     return NextResponse.json(
-      { error: "Error al actualizar cliente o gestionar vehículos", details: error.message },
+      { error: "Error al actualizar cliente", details: error.message },
       { status: 500 }
     );
   }
@@ -110,4 +58,22 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   }
+}
+
+// GET route to fetch a single client with optional vehicle inclusion
+export async function GET(request, { params }) {
+  const { id } = params;
+  const { searchParams } = new URL(request.url);
+  const includeVehicles = searchParams.get('includeVehicles') === 'true';
+
+  const client = await prisma.cliente.findUnique({
+    where: { dni: id },
+    include: includeVehicles ? { vehiculo: true } : undefined,
+  });
+
+  if (!client) {
+    return NextResponse.json({ error: 'Cliente no encontrado' }, { status: 404 });
+  }
+
+  return NextResponse.json(client);
 }
