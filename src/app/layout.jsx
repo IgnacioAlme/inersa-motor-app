@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
             <div className="container mx-auto px-4 py-3 flex justify-between items-center">
               <nav>
                 <ul className="flex space-x-6">
-                  {['Clientes', 'Vehículos', 'Repuestos', 'Revisiones'].map((item) => (
+                  {['CLIENTES', 'VEHICULOS', 'REPUESTOS', 'REVISIONES'].map((item) => (
                     <li key={item}>
                       <Link 
                         href={`/${item.toLowerCase()}`}
