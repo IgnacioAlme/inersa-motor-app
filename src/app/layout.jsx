@@ -1,5 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import Link from 'next/link';
+import Image from 'next/image';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,7 +25,35 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex flex-col min-h-screen">
+          <header className="bg-white shadow-md sticky top-0 z-50">
+            <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+              <nav>
+                <ul className="flex space-x-6">
+                  {['Clientes', 'Vehículos', 'Repuestos', 'Revisiones'].map((item) => (
+                    <li key={item}>
+                      <Link 
+                        href={`/${item.toLowerCase()}`}
+                        className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+                      >
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+              <Link href="/" className="flex items-center">
+                <Image src="/logo.png" alt="Logo" width={120} height={60} className="object-contain" />
+              </Link>
+            </div>
+          </header>
+          <main className="flex-grow container mx-auto px-4 py-8">
+            {children}
+          </main>
+          <footer className="bg-gray-100 text-center py-4 text-sm text-gray-600">
+            © {new Date().getFullYear()} Inersa Motorsport. Todos los derechos reservados.
+          </footer>
+        </div>
       </body>
     </html>
   );
