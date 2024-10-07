@@ -1,10 +1,26 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
-// Listar todos los vehiculos
+// Listar todos los vehiculos o vehiculos de un cliente específico
 export async function GET(request) {
   try {
-    const vehiculos = await prisma.vehiculo.findMany();
+    const { searchParams } = new URL(request.url);
+    const clienteDni = searchParams.get('clienteDni');
+
+    let vehiculos;
+
+    if (clienteDni) {
+      // Fetch vehicles for a specific client
+      vehiculos = await prisma.vehiculo.findMany({
+        where: {
+          clienteDni: clienteDni
+        }
+      });
+    } else {
+      // Fetch all vehicles
+      vehiculos = await prisma.vehiculo.findMany();
+    }
+
     return NextResponse.json(vehiculos);
   } catch (error) {
     console.error("Error fetching vehiculos:", error);
@@ -41,8 +57,11 @@ export async function POST(request) {
         marca: data.marca,
         modelo: data.modelo,
         anio: parseInt(data.anio), // Ensure anio is an integer
-        clienteDni: data.clienteDni,
+        cliente: {
+          connect: { dni: data.clienteDni },
+        },
       },
+      include: { cliente: true },
     });
 
     console.log("Created new vehicle:", newVehicle);

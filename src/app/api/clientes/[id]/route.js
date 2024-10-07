@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
-// Actualizar un cliente y añadir vehículo
+// Actualizar un cliente
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
     const data = await request.json();
 
+    // Update client information
     const updatedClient = await prisma.cliente.update({
       where: { dni: id },
       data: {
@@ -16,10 +17,23 @@ export async function PUT(request, { params }) {
         telefono: data.telefono,
         direccion: data.direccion,
       },
-      include: { vehiculo: true }, // Include vehicles in the response
     });
 
-    return NextResponse.json({ message: "Cliente actualizado exitosamente", data: updatedClient });
+    // Fetch associated vehicles
+    const vehicles = await prisma.vehiculo.findMany({
+      where: { clienteDni: id },
+    });
+
+    // Combine client data with vehicles
+    const clientWithVehicles = {
+      ...updatedClient,
+      vehiculos: vehicles,
+    };
+
+    return NextResponse.json({ 
+      message: "Cliente actualizado exitosamente", 
+      data: clientWithVehicles 
+    });
   } catch (error) {
     console.error("Error al actualizar cliente:", error);
     return NextResponse.json(
@@ -28,7 +42,6 @@ export async function PUT(request, { params }) {
     );
   }
 }
-
 
 // Actualizar un cliente
 /* export async function PUT(request, { params }) {

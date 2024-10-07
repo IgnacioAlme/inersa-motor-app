@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CrearRevision({ params }) {
   const router = useRouter();
-  const { dni } = params;
+  const { id: dni } = params;
   const [cliente, setCliente] = useState(null);
   const [vehiculos, setVehiculos] = useState([]);
   const [selectedVehiculo, setSelectedVehiculo] = useState('');
@@ -23,8 +23,17 @@ export default function CrearRevision({ params }) {
   const fetchClienteAndVehiculos = async () => {
     const clienteResponse = await fetch(`/api/clientes/${dni}`);
     const clienteData = await clienteResponse.json();
-    setCliente(clienteData);
-    setVehiculos(clienteData.vehiculo || []);
+    if (clienteData) {
+      setCliente(clienteData);
+      // Fetch vehicles for the client
+      const vehiculosResponse = await fetch(`/api/vehiculos?clienteDni=${dni}`);
+      if (vehiculosResponse.ok) {
+        const vehiculosData = await vehiculosResponse.json();
+        setVehiculos(vehiculosData);
+      } else {
+        console.error('Error fetching vehicles');
+      }
+    }
   };
 
   const fetchRepuestos = async () => {

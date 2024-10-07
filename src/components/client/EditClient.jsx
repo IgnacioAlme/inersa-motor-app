@@ -23,11 +23,16 @@ export default function EditClient({ client, onUpdateClient, onClose }) {
       const response = await fetch('/api/vehiculos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newVehicle, clienteDni: formData.dni }),
+        body: JSON.stringify({
+          ...newVehicle,
+          anio: parseInt(newVehicle.anio), // Ensure anio is sent as a number
+          clienteDni: formData.dni
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add vehicle');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add vehicle');
       }
 
       const result = await response.json();
@@ -35,7 +40,7 @@ export default function EditClient({ client, onUpdateClient, onClose }) {
       setNewVehicle({ matricula: "", marca: "", modelo: "", anio: "" });
     } catch (error) {
       console.error('Error adding vehicle:', error);
-      alert('Error adding vehicle. Please try again.');
+      alert(error.message || 'Error adding vehicle. Please try again.');
     }
   };
 
@@ -56,8 +61,26 @@ export default function EditClient({ client, onUpdateClient, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await onUpdateClient({ ...formData, vehiculo: vehicles });
-    onClose();
+    try {
+      const response = await fetch(`/api/clientes/${formData.dni}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update client');
+      }
+
+      const result = await response.json();
+      setFormData(result.data);
+      setVehicles(result.data.vehiculos);
+      onUpdateClient(result.data);
+      onClose();
+    } catch (error) {
+      console.error('Error updating client:', error);
+      alert('Error updating client. Please try again.');
+    }
   };
 
   return (
