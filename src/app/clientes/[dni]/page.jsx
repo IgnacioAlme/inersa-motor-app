@@ -10,6 +10,7 @@ export default function ClientePage() {
   const [client, setClient] = useState(null);
   const [vehicles, setVehicles] = useState([]);
   const [revisions, setRevisions] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,12 +27,7 @@ export default function ClientePage() {
         const clientVehicles = vehiclesData.filter(vehicle => vehicle.clienteDni === dni);
         setVehicles(clientVehicles);
 
-        // Fetch revisions data
-        const revisionsPromises = clientVehicles.map(vehicle =>
-          fetch(`/api/vehiculos/${vehicle.matricula}/revisiones`).then(res => res.json())
-        );
-        const allRevisions = await Promise.all(revisionsPromises);
-        setRevisions(allRevisions.flat());
+        // We'll fetch revisions when a vehicle is selected
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -41,6 +37,19 @@ export default function ClientePage() {
 
     fetchData();
   }, [dni]);
+
+  const handleVehicleClick = async (vehicle) => {
+    setSelectedVehicle(vehicle);
+    try {
+      const revisionsResponse = await fetch(`/api/revisiones?matricula=${vehicle.matricula}`);
+      const revisionsData = await revisionsResponse.json();
+      setRevisions(revisionsData);
+    } catch (error) {
+      console.error('Error fetching revisions:', error);
+    }
+  };
+
+  // Remove the getRevisionsForVehicle function as it's no longer needed
 
   if (loading) {
     return <div>Loading...</div>;
@@ -55,7 +64,7 @@ export default function ClientePage() {
       <h1 className="text-3xl font-bold mb-6">Detalles del Cliente</h1>
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="flex gap-6">
-          {/* Left column: Client information */}
+          {/* Client information */}
           <div className="w-1/3">
             <h2 className="text-2xl font-bold mb-4">Información del Cliente</h2>
             <div className="mb-4">
@@ -68,13 +77,17 @@ export default function ClientePage() {
             </div>
           </div>
 
-          {/* Middle column: List of vehicles */}
+          {/* List of vehicles */}
           <div className="w-1/3">
             <h2 className="text-2xl font-bold mb-4">Vehículos</h2>
             <div className="mb-4 max-h-[calc(100vh-300px)] overflow-y-auto">
               {vehicles.length > 0 ? (
-                vehicles.map((vehicle, index) => (
-                  <div key={index} className="mb-4 p-4 border rounded">
+                vehicles.map((vehicle) => (
+                  <div 
+                    key={vehicle.matricula}
+                    className={`mb-4 p-4 border rounded cursor-pointer ${selectedVehicle?.matricula === vehicle.matricula ? 'bg-blue-100' : ''}`}
+                    onClick={() => handleVehicleClick(vehicle)}
+                  >
                     <p><strong>Matrícula:</strong> {vehicle.matricula}</p>
                     <p><strong>Marca:</strong> {vehicle.marca}</p>
                     <p><strong>Modelo:</strong> {vehicle.modelo}</p>
@@ -87,20 +100,24 @@ export default function ClientePage() {
             </div>
           </div>
 
-          {/* Right column: List of revisions */}
+          {/* List of revisions for selected vehicle */}
           <div className="w-1/3">
             <h2 className="text-2xl font-bold mb-4">Revisiones</h2>
             <div className="mb-4 max-h-[calc(100vh-300px)] overflow-y-auto">
-              {revisions.length > 0 ? (
-                revisions.map((revision, index) => (
-                  <div key={index} className="mb-4 p-4 border rounded">
-                    <p><strong>Fecha:</strong> {new Date(revision.fecha).toLocaleDateString()}</p>
-                    <p><strong>Kilometraje:</strong> {revision.kilometraje}</p>
-                    <p><strong>Descripción:</strong> {revision.descripcion}</p>
-                  </div>
-                ))
+              {selectedVehicle ? (
+                revisions.length > 0 ? (
+                  revisions.map((revision) => (
+                    <div key={revision.id} className="mb-4 p-4 border rounded">
+                      <p><strong>Fecha:</strong> {new Date(revision.fecha).toLocaleDateString()}</p>
+                      <p><strong>Detalles:</strong> {revision.detalles}</p>
+                      <p><strong>Presupuesto:</strong> {revision.presupuesto}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No hay revisiones para este vehículo.</p>
+                )
               ) : (
-                <p>Sin revisiones</p>
+                <p>Seleccione un vehículo para ver sus revisiones.</p>
               )}
             </div>
           </div>
