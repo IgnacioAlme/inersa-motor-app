@@ -108,7 +108,7 @@ export default function Clientes() {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (

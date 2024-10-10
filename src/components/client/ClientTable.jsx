@@ -25,7 +25,7 @@ export default function ClientTable({ clientes, onDeleteClient, onEditClient }) 
             <td className="py-2 px-4 border-b">{cliente.telefono}</td>
             <td className="py-2 px-4 border-b">{cliente.direccion}</td>
             <td className="py-2 px-4 border-b">
-              <Link href={`/revisiones/crear/${cliente.dni}`} className="text-blue-600 hover:underline mr-2">
+              <Link href={`/revisiones/${cliente.dni}`} className="text-blue-600 hover:underline mr-2">
                 Crear Revisión
               </Link>
               <button
