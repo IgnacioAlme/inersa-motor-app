@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import InvoicePDF from "@/components/InvoicePDF";
 
 export default function CrearRevision({ params }) {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function CrearRevision({ params }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
     fetchClienteAndVehiculos();
@@ -74,7 +77,21 @@ export default function CrearRevision({ params }) {
       });
 
       if (response.ok) {
+        const revisionData = await response.json();
         setSubmitMessage('Revisión creada exitosamente');
+        
+        // Prepare invoice data
+        setInvoiceData({
+          revisionId: revisionData.id,
+          cliente: cliente,
+          vehiculo: vehiculos.find(v => v.matricula === selectedVehiculo),
+          repuestos: selectedRepuestos,
+          detalles: detalles,
+          presupuestoAdicional: Number(presupuestoAdicional),
+          totalPresupuesto: totalPresupuesto,
+          fecha: new Date().toLocaleDateString()
+        });
+
         // Optionally reset form fields here
         setDetalles('');
         setSelectedVehiculo('');
@@ -218,6 +235,20 @@ export default function CrearRevision({ params }) {
           {isSubmitting ? 'Creando...' : 'Crear Revisión'}
         </button>
       </form>
+
+      {invoiceData && (
+        <div className="mt-4">
+          <PDFDownloadLink
+            document={<InvoicePDF data={invoiceData} />}
+            fileName={`invoice_${invoiceData.revisionId}.pdf`}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            {({ blob, url, loading, error }) =>
+              loading ? 'Generando PDF...' : 'Descargar Factura PDF'
+            }
+          </PDFDownloadLink>
+        </div>
+      )}
     </div>
   );
 }
