@@ -11,7 +11,7 @@ export async function GET() {
     });
 
 const revenueByMonth = await prisma.$queryRaw`SELECT 
-    strftime('%m', fecha) AS month,
+    strftime('%m', datetime(fecha / 1000, 'unixepoch')) AS month,
     SUM(presupuesto) AS total_revenue
 FROM
     Revision
