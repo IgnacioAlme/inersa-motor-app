@@ -51,7 +51,7 @@ function Repuestos() {
         method: "POST",
         body: formData,
       });
-      if (!response.ok) throw new Error("Failed to upload file");
+      if (!response.ok) throw new Error("Error al cargar archivo");
       const result = await response.json();
       setUploadStatus(`Successfully processed ${result.count} records`);
       await fetchRepuestos(); // Refresh the table after successful upload
@@ -113,7 +113,7 @@ function Repuestos() {
           htmlFor="csvUpload"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
         >
-          Upload CSV
+          Cargar CSV
         </label>
       </div>
 
@@ -125,7 +125,7 @@ function Repuestos() {
         <input
           type="text"
           name="distribuidor"
-          placeholder="Filter by Distribuidor"
+          placeholder="Filtrar por distribuidor"
           value={filters.distribuidor}
           onChange={handleFilterChange}
           className="border p-2 rounded"
@@ -133,7 +133,7 @@ function Repuestos() {
         <input
           type="text"
           name="marca"
-          placeholder="Filter by Marca"
+          placeholder="Filtrar por marca"
           value={filters.marca}
           onChange={handleFilterChange}
           className="border p-2 rounded"
@@ -141,19 +141,30 @@ function Repuestos() {
         <input
           type="text"
           name="marca_auto"
-          placeholder="Filter by Marca Auto"
+          placeholder="Filtrar por marca auto"
           value={filters.marca_auto}
           onChange={handleFilterChange}
           className="border p-2 rounded"
         />
-        <input
-          type="text"
+        <select
           name="tipo"
-          placeholder="Filter by Tipo"
           value={filters.tipo}
           onChange={handleFilterChange}
           className="border p-2 rounded"
-        />
+        >
+          <option value="">Filtrar por tipo</option>
+          <option value="ACEITE">ACEITES</option>
+          <option value="ACEITES TRANSM. Y GRASAS">ACEITES TRANSM. Y GRASAS</option>
+          <option value="LIQ. REFRIGERANTE Y ANTICONGEL.">LIQ. REFRIGERANTE Y ANTICONGEL.</option>
+          <option value="LUBRICANTES Y ADITIVOS">LUBRICANTES Y ADITIVOS</option>
+          <option value="FILTRO PACK">FILTRO PACK</option>
+          <option value="FILTRO ACEITE">FILTRO ACEITE</option>
+          <option value="FILTRO ANTIPOLEN P/CABINA">FILTRO ANTIPOLEN P/CABINA</option>
+          <option value="FILTRO COMBUSTIBLE">FILTRO COMBUSTIBLE</option>
+          <option value="FILTRO DE AIRE">FILTRO DE AIRE</option>
+          <option value="FILTRO">FILTROS</option>
+          <option value="GRASA">GRASA</option>
+        </select>
       </div>
 
       {filteredRepuestos.length > 0 && (

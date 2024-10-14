@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { CiEdit, CiTrash, CiSquarePlus } from "react-icons/ci"; 
 import Link from 'next/link';
 
 export default function ClientTable({ clientes, onDeleteClient, onEditClient }) {
@@ -18,27 +18,33 @@ export default function ClientTable({ clientes, onDeleteClient, onEditClient }) 
       <tbody>
         {clientes.map((cliente) => (
           <tr key={cliente.dni}>
-            <td className="py-2 px-4 border-b">{cliente.dni}</td>
+            <td className="py-2 px-4 border-b">
+              <Link href={`/clientes/${cliente.dni}`}>
+                {cliente.dni}
+              </Link>
+            </td>
             <td className="py-2 px-4 border-b">{cliente.nombre}</td>
             <td className="py-2 px-4 border-b">{cliente.apellido}</td>
             <td className="py-2 px-4 border-b">{cliente.email}</td>
             <td className="py-2 px-4 border-b">{cliente.telefono}</td>
             <td className="py-2 px-4 border-b">{cliente.direccion}</td>
-            <td className="py-2 px-4 border-b">
-              <Link href={`/revisiones/${cliente.dni}`} className="text-blue-600 hover:underline mr-2">
-                Crear Revisión
+            <td className="py-2 px-4 border-b text-right">
+              <Link href={`/revisiones/${cliente.dni}`}>
+              <button className="text-blue-600 hover:underline mr-2">
+              <CiSquarePlus size={42}/>
+              </button>
               </Link>
               <button
                 onClick={() => onEditClient(cliente)}
                 className="text-yellow-600 hover:underline mr-2"
               >
-                Editar
+              <CiEdit size={42}/>
               </button>
               <button
                 onClick={() => onDeleteClient(cliente.dni)}
                 className="text-red-600 hover:underline"
               >
-                Eliminar
+                <CiTrash size={42}/>
               </button>
             </td>
           </tr>

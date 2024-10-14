@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
               </Link>
               <nav>
                 <ul className="flex space-x-6">
-                  {['CLIENTES', 'VEHICULOS', 'REPUESTOS', 'REVISIONES'].map((item) => (
+                  {['CLIENTES', 'VEHICULOS', 'REPUESTOS', 'INFORMES'].map((item) => (
                     <li key={item}>
                       <Link 
                         href={`/${item.toLowerCase()}`}
