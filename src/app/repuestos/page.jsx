@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { TbFileUpload } from "react-icons/tb";
 
-
 function Repuestos() {
   const [repuestos, setRepuestos] = useState([]);
   const [filteredRepuestos, setFilteredRepuestos] = useState([]);
@@ -16,10 +15,12 @@ function Repuestos() {
     marca_auto: "",
     tipo: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(20); // Tamaño de página fijo
 
   useEffect(() => {
     fetchRepuestos();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     applyFilters();
@@ -28,7 +29,7 @@ function Repuestos() {
   const fetchRepuestos = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/repuestos");
+      const response = await fetch(`/api/repuestos?page=${currentPage}&pageSize=${pageSize}`);
       if (!response.ok) throw new Error("Failed to fetch repuestos");
       const data = await response.json();
       setRepuestos(data);
@@ -97,6 +98,14 @@ function Repuestos() {
       );
     }
     setFilteredRepuestos(filtered);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
   return (
@@ -202,6 +211,24 @@ function Repuestos() {
           </table>
         </div>
       )}
+
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+        >
+          Anterior
+        </button>
+        <span>Página {currentPage}</span>
+        <button
+          onClick={handleNextPage}
+          disabled={filteredRepuestos.length < pageSize} // Desactivar si hay menos de pageSize elementos
+          className={`bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded ${filteredRepuestos.length < pageSize ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          Siguiente
+        </button>
+      </div>
     </div>
   );
 }

@@ -22,6 +22,8 @@ export default function CrearRevision({ params }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [invoiceData, setInvoiceData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(20); // Tamaño de página fijo
 
   useEffect(() => {
     fetchClienteAndVehiculos();
@@ -45,7 +47,7 @@ export default function CrearRevision({ params }) {
   };
 
   const fetchRepuestos = async () => {
-    const response = await fetch("/api/repuestos");
+    const response = await fetch(`/api/repuestos?page=${currentPage}&pageSize=${pageSize}`);
     const data = await response.json();
     setRepuestos(data);
   };
@@ -118,6 +120,14 @@ export default function CrearRevision({ params }) {
       r.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
       r.marca_auto.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
 
   if (!cliente) return <div>Cargando...</div>;
 
@@ -205,6 +215,24 @@ export default function CrearRevision({ params }) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+          >
+            Anterior
+          </button>
+          <span>Página {currentPage}</span>
+          <button
+            onClick={handleNextPage}
+            disabled={filteredRepuestos.length < pageSize} // Desactivar si hay menos de pageSize elementos
+            className={`bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded ${filteredRepuestos.length < pageSize ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Siguiente
+          </button>
         </div>
 
         <div className="mb-4">

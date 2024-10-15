@@ -2,9 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 import { parse } from 'csv-parse/sync';
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const repuestos = await prisma.repuesto.findMany();
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page')) || 1; // Página actual, por defecto 1
+    const pageSize = parseInt(url.searchParams.get('pageSize')) || 20; // Tamaño de página, por defecto 20
+
+    const repuestos = await prisma.repuesto.findMany({
+      skip: (page - 1) * pageSize, // Saltar los resultados de las páginas anteriores
+      take: pageSize, // Limitar a la cantidad de resultados por página
+    });
+    
     return NextResponse.json(repuestos);
   } catch (error) {
     return NextResponse.json({ error: "Error fetching repuestos" }, { status: 500 });
