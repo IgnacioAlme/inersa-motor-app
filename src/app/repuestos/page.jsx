@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { TbFileUpload } from "react-icons/tb";
+
 
 function Repuestos() {
   const [repuestos, setRepuestos] = useState([]);
@@ -111,9 +113,10 @@ function Repuestos() {
         />
         <label
           htmlFor="csvUpload"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded cursor-pointer inline-flex items-center"
         >
           Cargar CSV
+          <TbFileUpload size={24} className="ml-2" />
         </label>
       </div>
 

@@ -30,19 +30,21 @@ export default function ClientTable({ clientes, onDeleteClient, onEditClient }) 
             <td className="py-2 px-4 border-b">{cliente.direccion}</td>
             <td className="py-2 px-4 border-b text-right">
               <Link href={`/revisiones/${cliente.dni}`}>
-              <button className="text-blue-600 hover:underline mr-2">
+              <button className="text-blue-600 hover:underline mr-2" title="Añadir revisión">
               <CiSquarePlus size={42}/>
               </button>
               </Link>
               <button
                 onClick={() => onEditClient(cliente)}
                 className="text-yellow-600 hover:underline mr-2"
+                title="Editar cliente"
               >
               <CiEdit size={42}/>
               </button>
               <button
                 onClick={() => onDeleteClient(cliente.dni)}
                 className="text-red-600 hover:underline"
+                title="Borrar cliente"
               >
                 <CiTrash size={42}/>
               </button>

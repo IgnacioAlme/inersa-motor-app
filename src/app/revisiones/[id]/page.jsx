@@ -1,4 +1,7 @@
 "use client";
+import { TbFileTypePdf } from "react-icons/tb";
+import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
+ 
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -189,13 +192,13 @@ export default function CrearRevision({ params }) {
                   <td className="border p-2">{r.codigo}</td>
                   <td className="border p-2">{r.descripcion}</td>
                   <td className="border p-2">{r.precio}</td>
-                  <td className="border p-2">
+                  <td className="border p-2 text-right">
                     <button
                       type="button"
                       onClick={() => handleRepuestoSelect(r)}
                       className="bg-blue-500 text-white px-2 py-1 rounded"
                     >
-                      Añadir
+                      <CiCirclePlus size={42}  />	
                     </button>
                   </td>
                 </tr>
@@ -220,7 +223,7 @@ export default function CrearRevision({ params }) {
                   onClick={() => handleRepuestoRemove(r.codigo)}
                   className="bg-red-500 text-white px-2 py-1 rounded"
                 >
-                  Eliminar
+                  <CiCircleMinus size={42}  />
                 </button>
               </li>
             ))}
@@ -241,10 +244,17 @@ export default function CrearRevision({ params }) {
           <PDFDownloadLink
             document={<InvoicePDF data={invoiceData} />}
             fileName={`invoice_${invoiceData.revisionId}.pdf`}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-500 text-white px-4 py-2 rounded inline-flex items-center"
           >
             {({ blob, url, loading, error }) =>
-              loading ? 'Generando PDF...' : 'Descargar Factura PDF'
+              loading ? (
+                'Generando PDF...'
+              ) : (
+                <>
+                  <TbFileTypePdf size={24} className="mr-2" />
+                  Descargar Factura PDF
+                </>
+              )
             }
           </PDFDownloadLink>
         </div>
