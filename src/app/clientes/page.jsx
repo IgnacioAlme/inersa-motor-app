@@ -113,7 +113,7 @@ export default function Clientes() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Lista de Clientes</h1>
+      <h1 className="text-2xl font-bold mb-4 z-10 relative">Lista de Clientes</h1>
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error:</strong>
@@ -134,8 +134,8 @@ export default function Clientes() {
       />
 
       {showPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify- center z-20">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl max-h-[80vh] overflow-y-auto">
             <AddClient
               onAddClient={handleAddCliente}
               onClose={() => setShowPopup(false)}
@@ -145,8 +145,8 @@ export default function Clientes() {
       )}
 
       {editingClient && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl max-h-[80vh] overflow-y-auto">
             <EditClient
               client={editingClient}
               onUpdateClient={handleUpdateClient}
