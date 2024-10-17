@@ -24,11 +24,17 @@ export default function CrearRevision({ params }) {
   const [invoiceData, setInvoiceData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(20); // Tamaño de página fijo
+  const [filters, setFilters] = useState({
+    distribuidor: "",
+    marca: "",
+    marca_auto: "",
+    tipo: "",
+  });
 
   useEffect(() => {
     fetchClienteAndVehiculos();
     fetchRepuestos();
-  }, [dni]);
+  }, [dni, currentPage]); // Add currentPage to the dependency array
 
   const fetchClienteAndVehiculos = async () => {
     const clienteResponse = await fetch(`/api/clientes/${dni}`);
@@ -114,6 +120,36 @@ export default function CrearRevision({ params }) {
     }
   };
 
+  const applyFilters = () => {
+    let filtered = repuestos;
+    if (filters.distribuidor) {
+      filtered = filtered.filter((r) =>
+        r.distribuidor.toLowerCase().includes(filters.distribuidor.toLowerCase())
+      );
+    }
+    if (filters.marca) {
+      filtered = filtered.filter((r) =>
+        r.marca.toLowerCase().includes(filters.marca.toLowerCase())
+      );
+    }
+    if (filters.marca_auto) {
+      filtered = filtered.filter((r) =>
+        r.marca_auto.toLowerCase().includes(filters.marca_auto.toLowerCase())
+      );
+    }
+    if (filters.tipo) {
+      filtered = filtered.filter((r) =>
+        r.tipo.toLowerCase().includes(filters.tipo.toLowerCase())
+      );
+    }
+    setFilteredRepuestos(filtered);
+  };
+
+  const handleFilterChange = (e) => {
+    setFilters((prevFilters) => ({ ...prevFilters, [e.target.name]: e.target.value }));
+    applyFilters();
+  };
+
   const filteredRepuestos = repuestos.filter(
     (r) =>
       r.tipo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -191,7 +227,11 @@ export default function CrearRevision({ params }) {
             <thead>
               <tr>
                 <th className="border p-2">Código</th>
+                <th className="border p-2">Distribuidor</th>
                 <th className="border p-2">Descripción</th>
+                <th className="border p-2">Marca</th>
+                <th className="border p-2">Tipo</th>
+                <th className="border p-2">Marca Auto</th>
                 <th className="border p-2">Precio</th>
                 <th className="border p-2">Acción</th>
               </tr>
@@ -200,7 +240,11 @@ export default function CrearRevision({ params }) {
               {filteredRepuestos.map((r) => (
                 <tr key={r.codigo}>
                   <td className="border p-2">{r.codigo}</td>
+                  <td className="border p-2">{r.distribuidor}</td>
                   <td className="border p-2">{r.descripcion}</td>
+                  <td className="border p-2">{r.marca}</td>
+                  <td className="border p-2">{r.tipo}</td>
+                  <td className="border p-2">{r.marca_auto}</td>
                   <td className="border p-2">{r.precio}</td>
                   <td className="border p-2 text-right">
                     <button
@@ -208,7 +252,7 @@ export default function CrearRevision({ params }) {
                       onClick={() => handleRepuestoSelect(r)}
                       className="bg-blue-500 text-white px-2 py-1 rounded"
                     >
-                      <CiCirclePlus size={42}  />	
+                      <CiCirclePlus size={42} />
                     </button>
                   </td>
                 </tr>
@@ -216,6 +260,52 @@ export default function CrearRevision({ params }) {
             </tbody>
           </table>
         </div>
+
+        {/* <div className="mb-4">
+          <input
+            type="text"
+            name="distribuidor"
+            placeholder="Filtrar por distribuidor"
+            value={filters.distribuidor}
+            onChange={handleFilterChange}
+            className="border p-2 rounded"
+          />
+          <input
+            type="text"
+            name="marca"
+            placeholder="Filtrar por marca"
+            value={filters.marca}
+            onChange={handleFilterChange}
+            className="border p-2 rounded"
+          />
+          <input
+            type="text"
+            name="marca_auto"
+            placeholder="Filtrar por marca auto"
+            value={filters.marca_auto}
+            onChange={handleFilterChange}
+            className="border p-2 rounded"
+          />
+          <select
+            name="tipo"
+            value={filters.tipo}
+            onChange={handleFilterChange}
+            className="border p-2 rounded"
+          >
+            <option value="">Filtrar por tipo</option>
+            <option value="ACEITE">ACEITES</option>
+            <option value="ACEITES TRANSM. Y GRASAS">ACEITES TRANSM. Y GRASAS</option>
+            <option value="LIQ. REFRIGERANTE Y ANTICONGEL.">LIQ. REFRIGERANTE Y ANTICONGEL.</option>
+            <option value="LUBRICANTES Y ADITIVOS">LUBRICANTES Y ADITIVOS</option>
+            <option value="FILTRO PACK">FILTRO PACK</option>
+            <option value="FILTRO ACEITE">FILTRO ACEITE</option>
+            <option value="FILTRO ANTIPOLEN P/CABINA">FILTRO ANTIPOLEN P/CABINA</option>
+            <option value="FILTRO COMBUSTIBLE">FILTRO COMBUSTIBLE</option>
+            <option value="FILTRO DE AIRE">FILTRO DE AIRE</option>
+            <option value="FILTRO">FILTROS</option>
+            <option value="GRASA">GRASA</option>
+          </select>
+        </div> */}
 
         <div className="flex justify-between mt-4">
           <button
@@ -251,7 +341,7 @@ export default function CrearRevision({ params }) {
                   onClick={() => handleRepuestoRemove(r.codigo)}
                   className="bg-red-500 text-white px-2 py-1 rounded"
                 >
-                  <CiCircleMinus size={42}  />
+                  <CiCircleMinus size={42} />
                 </button>
               </li>
             ))}
