@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/libs/prisma";
+import prisma from "@/libs/prisma";
 
 // Listar todos los vehiculos o vehiculos de un cliente específico
 export async function GET(request) {
