@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TbFileUpload } from "react-icons/tb";
 
 function Repuestos() {
@@ -20,13 +20,13 @@ function Repuestos() {
 
   useEffect(() => {
     fetchRepuestos();
-  }, [currentPage]);
+  }, [currentPage, fetchRepuestos]);
 
   useEffect(() => {
     applyFilters();
-  }, [repuestos, filters]);
+  }, [repuestos, filters, applyFilters]);
 
-  const fetchRepuestos = async () => {
+  const fetchRepuestos = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/repuestos?page=${currentPage}&pageSize=${pageSize}`);
@@ -38,7 +38,7 @@ function Repuestos() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, pageSize]);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -73,7 +73,7 @@ function Repuestos() {
     }));
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = repuestos;
     if (filters.distribuidor) {
       filtered = filtered.filter((r) =>
@@ -98,7 +98,7 @@ function Repuestos() {
       );
     }
     setFilteredRepuestos(filtered);
-  };
+  });
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);

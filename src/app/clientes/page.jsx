@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AddClient from "@/components/client/AddClient";
 import ClientTable from "@/components/client/ClientTable";
 import EditClient from "@/components/client/EditClient";
@@ -14,9 +14,9 @@ export default function Clientes() {
 
   useEffect(() => {
     fetchClientes();
-  }, []);
+  }, [fetchClientes]);
 
-  const fetchClientes = async () => {
+  const fetchClientes = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/clientes");
@@ -28,7 +28,7 @@ export default function Clientes() {
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   const handleAddCliente = (newCliente) => {
     setClientes(prevClientes => [...prevClientes, newCliente]);

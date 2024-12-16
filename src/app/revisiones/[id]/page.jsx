@@ -3,7 +3,7 @@ import { TbFileTypePdf } from "react-icons/tb";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
  
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import InvoicePDF from "@/components/InvoicePDF";
@@ -34,9 +34,9 @@ export default function CrearRevision({ params }) {
   useEffect(() => {
     fetchClienteAndVehiculos();
     fetchRepuestos();
-  }, [dni, currentPage]); // Add currentPage to the dependency array
+  }, [dni, currentPage, fetchClienteAndVehiculos, fetchRepuestos]); // Add currentPage to the dependency array
 
-  const fetchClienteAndVehiculos = async () => {
+  const fetchClienteAndVehiculos = useCallback(async () => {
     const clienteResponse = await fetch(`/api/clientes/${dni}`);
     const clienteData = await clienteResponse.json();
     if (clienteData) {
@@ -50,13 +50,13 @@ export default function CrearRevision({ params }) {
         console.error("Error fetching vehicles");
       }
     }
-  };
+  });
 
-  const fetchRepuestos = async () => {
+  const fetchRepuestos = useCallback(async () => {
     const response = await fetch(`/api/repuestos?page=${currentPage}&pageSize=${pageSize}`);
     const data = await response.json();
     setRepuestos(data);
-  };
+  });
 
   const handleRepuestoSelect = (repuesto) => {
     setSelectedRepuestos([...selectedRepuestos, repuesto]);
