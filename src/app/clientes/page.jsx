@@ -14,7 +14,7 @@ export default function Clientes() {
 
   useEffect(() => {
     fetchClientes();
-  }, [fetchClientes]);
+  }, []);
 
   const fetchClientes = useCallback(async () => {
     setIsLoading(true);
@@ -31,7 +31,7 @@ export default function Clientes() {
   });
 
   const handleAddCliente = (newCliente) => {
-    setClientes(prevClientes => [...prevClientes, newCliente]);
+    setClientes((prevClientes) => [...prevClientes, newCliente]);
     setShowPopup(false);
   };
 
@@ -40,13 +40,18 @@ export default function Clientes() {
       const response = await fetch(`/api/clientes/${dni}`, {
         method: "DELETE",
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to delete client. Status: ${response.status}`);
+        throw new Error(
+          errorData.message ||
+            `Failed to delete client. Status: ${response.status}`
+        );
       }
-      
-      setClientes(prevClientes => prevClientes.filter(cliente => cliente.dni !== dni));
+
+      setClientes((prevClientes) =>
+        prevClientes.filter((cliente) => cliente.dni !== dni)
+      );
     } catch (err) {
       console.error("Error deleting client:", err);
       setError(err.message);
@@ -57,12 +62,14 @@ export default function Clientes() {
 
   const handleEditClient = async (client) => {
     try {
-      const response = await fetch(`/api/clientes/${client.dni}?includeVehicles=true`);
-      if (!response.ok) throw new Error('Failed to fetch client details');
+      const response = await fetch(
+        `/api/clientes/${client.dni}?includeVehicles=true`
+      );
+      if (!response.ok) throw new Error("Failed to fetch client details");
       const data = await response.json();
       setEditingClient(data);
     } catch (error) {
-      console.error('Error fetching client details:', error);
+      console.error("Error fetching client details:", error);
       // Mostrar error al usuario
     }
   };
@@ -79,12 +86,15 @@ export default function Clientes() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to update client. Status: ${response.status}`);
+        throw new Error(
+          errorData.message ||
+            `Failed to update client. Status: ${response.status}`
+        );
       }
 
       const updatedData = await response.json();
-      setClientes(prevClientes =>
-        prevClientes.map(cliente =>
+      setClientes((prevClientes) =>
+        prevClientes.map((cliente) =>
           cliente.dni === updatedClient.dni ? updatedData.data : cliente
         )
       );
@@ -99,12 +109,11 @@ export default function Clientes() {
   const fetchClientDetails = async (dni) => {
     try {
       const response = await fetch(`/api/clientes/${dni}?includeVehicles=true`);
-      if (!response.ok) throw new Error('Failed to fetch client details');
+      if (!response.ok) throw new Error("Failed to fetch client details");
       const data = await response.json();
       setEditingClient(data);
     } catch (error) {
-      console.error('Error fetching client details:', error);
-      
+      console.error("Error fetching client details:", error);
     }
   };
 
@@ -113,9 +122,14 @@ export default function Clientes() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 z-10 relative">Lista de Clientes</h1>
+      <h1 className="text-2xl font-bold mb-4 z-10 relative">
+        Lista de Clientes
+      </h1>
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
           <strong className="font-bold">Error:</strong>
           <span className="block sm:inline"> {error}</span>
         </div>
