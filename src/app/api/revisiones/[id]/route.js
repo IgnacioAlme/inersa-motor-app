@@ -1,33 +1,15 @@
-import { NextResponse } from "next/server";
-import { prisma } from "../../../../libs/prisma";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
-// Ver una revision
-export async function GET(request, { params }) {
-  const { id } = params.id;
-  const response = await prisma.revision.findUnique({
-    where: { id },
-  });
-  return NextResponse.json(response);
+export async function DELETE(request, { params }) {
+  try {
+    const { id } = params;
+    await prisma.revision.delete({
+      where: { id: parseInt(id) },
+    });
+    return NextResponse.json({ message: 'Revision deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting revision:', error);
+    return NextResponse.json({ error: 'Error deleting revision' }, { status: 500 });
+  }
 }
-
-// Actualizar una revision
-export async function PUT(request) {
-  const { id } = await request.json();
-  const response = await prisma.revision.update({
-    where: { id },
-    data: await request.json(),
-  });
-
-  return NextResponse.json(response);
-}
-
-// Eliminar una revision
-export async function DELETE(request) {
-  const { id } = await request.json();
-  const response = await prisma.revision.delete({
-    where: { id },
-  });
-
-  return NextResponse.json(response);
-}
-

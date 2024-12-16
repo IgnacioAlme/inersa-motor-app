@@ -50,7 +50,7 @@ export default function Clientes() {
     } catch (err) {
       console.error("Error deleting client:", err);
       setError(err.message);
-      // Optionally, you can set a timeout to clear the error after a few seconds
+      // timeout para limpiar el error
       setTimeout(() => setError(null), 5000);
     }
   };
@@ -63,7 +63,7 @@ export default function Clientes() {
       setEditingClient(data);
     } catch (error) {
       console.error('Error fetching client details:', error);
-      // Handle error (e.g., show an error message to the user)
+      // Mostrar error al usuario
     }
   };
 
@@ -101,20 +101,19 @@ export default function Clientes() {
       const response = await fetch(`/api/clientes/${dni}?includeVehicles=true`);
       if (!response.ok) throw new Error('Failed to fetch client details');
       const data = await response.json();
-      console.log('Fetched client data:', data); // Add this line for debugging
       setEditingClient(data);
     } catch (error) {
       console.error('Error fetching client details:', error);
-      // Handle error (e.g., show an error message to the user)
+      
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Lista de Clientes</h1>
+      <h1 className="text-2xl font-bold mb-4 z-10 relative">Lista de Clientes</h1>
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error:</strong>
@@ -135,8 +134,8 @@ export default function Clientes() {
       />
 
       {showPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify- center z-20">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl max-h-[80vh] overflow-y-auto">
             <AddClient
               onAddClient={handleAddCliente}
               onClose={() => setShowPopup(false)}
@@ -146,8 +145,8 @@ export default function Clientes() {
       )}
 
       {editingClient && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl max-h-[80vh] overflow-y-auto">
             <EditClient
               client={editingClient}
               onUpdateClient={handleUpdateClient}

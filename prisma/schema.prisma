@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["typedSQL"]
 }
 
 datasource db {
@@ -26,7 +27,7 @@ model Vehiculo {
   modelo String
   anio Int?
   cliente Cliente? @relation(fields: [clienteDni], references: [dni])
-  clienteDni String
+  clienteDni String?
   revision Revision[]
 }
 
@@ -45,7 +46,7 @@ model Revision {
   detalles String?
   presupuesto Float?
   fecha DateTime @default(now())
-  vehiculo Vehiculo? @relation(fields: [vehiculoId], references: [matricula])
+  vehiculo Vehiculo @relation(fields: [vehiculoId], references: [matricula])
   vehiculoId String
 }
 

@@ -1,23 +1,48 @@
-import { NextResponse } from "next/server";
-import { prisma } from "../../../libs/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/libs/prisma';
 
-// Listar todas las revisiones
 export async function GET(request) {
-  const response = await prisma.revision.findMany();
-  return NextResponse.json(response);
+  const { searchParams } = new URL(request.url);
+  const matricula = searchParams.get('matricula');
+
+  try {
+    let revisiones;
+    if (matricula) {
+      revisiones = await prisma.revision.findMany({
+        where: { vehiculoId: matricula },
+        include: { vehiculo: true },
+      });
+    } else {
+      revisiones = await prisma.revision.findMany({
+        include: { vehiculo: true },
+      });
+    }
+    return NextResponse.json(revisiones);
+  } catch (error) {
+    console.error('Error fetching revisiones:', error);
+    return NextResponse.json({ error: 'Error fetching revisiones' }, { status: 500 });
+  }
 }
 
-// Crear una revision
 export async function POST(request) {
-  const { vehiculoId, detalles, presupuesto, fecha } = await request.json();
-  const response = await prisma.revision.create({
-    data: {
-      vehiculoId,
-      detalles,
-      presupuesto,
-      fecha,
-    },
-  });
+  try {
+    const body = await request.json();
+    const { detalles, presupuesto, vehiculoId, repuestos } = body;
 
-  return NextResponse.json(response);
+    const repuestosString = repuestos.map(r => `${r.codigo} - ${r.descripcion}`).join(', ');
+    const fullDetalles = `${detalles}\n\nRepuestos utilizados: ${repuestosString}`;
+
+    const newRevision = await prisma.revision.create({
+      data: {
+        detalles: fullDetalles,
+        presupuesto,
+        vehiculoId,
+      },
+    });
+
+    return NextResponse.json(newRevision, { status: 201 });
+  } catch (error) {
+    console.error('Error creating revision:', error);
+    return NextResponse.json({ error: 'Error creating revision' }, { status: 500 });
+  }
 }
